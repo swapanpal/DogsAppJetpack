@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 
 
 public class ListFragment extends Fragment {
+    // bind the floatingActionButton with Butterknife library
     @BindView(R.id.floatingActionButton)
     FloatingActionButton fab;
 
@@ -39,12 +40,13 @@ public class ListFragment extends Fragment {
         return view;
     }
 
+    // override the onViewCreated and add click listener on fab button
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fab.setOnClickListener(view1 -> { onGoToDetails(); });
     }
-
+    // Create helper method to navigate from list fragment to Detail fragment
     void onGoToDetails(){
         NavDirections action = ListFragmentDirections.actionDetail();
         Navigation.findNavController(fab).navigate(action);
