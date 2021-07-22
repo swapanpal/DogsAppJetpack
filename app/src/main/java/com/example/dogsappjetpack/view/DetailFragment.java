@@ -11,6 +11,7 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.dogsappjetpack.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -20,9 +21,8 @@ import butterknife.ButterKnife;
 
 
 public class DetailFragment extends Fragment {
-    // bind the floatingActionButton with Butterknife library
-    @BindView(R.id.floatingActionButton2)
-    FloatingActionButton fab2;
+
+    private int dogUuid;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -42,14 +42,9 @@ public class DetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fab2.setOnClickListener(view1 -> { onGoToList(); });
+        if (getArguments() != null){
+            dogUuid = DetailFragmentArgs.fromBundle(getArguments()).getDogUuid();
+        }
     }
 
-    // Create helper method to navigate from list fragment to Detail fragment
-    void onGoToList(){
-        NavDirections action = DetailFragmentDirections.actionList();
-        Navigation.findNavController(fab2).navigate(action);
-
-
-    }
 }
