@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -63,6 +64,11 @@ public class ListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Navigate the view direct from List to Detail (Direct open details fragment
+        /**
+        ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+        Navigation.findNavController(view).navigate(action);
+        */
         viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         viewModel.refresh();
 
