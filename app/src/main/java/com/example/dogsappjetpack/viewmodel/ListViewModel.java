@@ -7,9 +7,15 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.dogsappjetpack.model.DogBreed;
+import com.example.dogsappjetpack.model.DogsApiService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 // If we did not need to use Context than use only "ViewModel" otherwise use "AndroidViewModel"
 // One ViewModel can display only one view, example "ListFragment", If we want to display another view than
@@ -22,48 +28,51 @@ public class ListViewModel extends AndroidViewModel {
     public MutableLiveData<Boolean> dogLoadError = new MutableLiveData<Boolean>();
     public MutableLiveData<Boolean> loading = new MutableLiveData<Boolean>();
 
+    // Create a variable of DogsApiService
+    private DogsApiService dogsService = new DogsApiService();
+    // collect disposable observer
+    private CompositeDisposable disposable = new CompositeDisposable();
+
     // Default constructor of the AndroidViewModel
     public ListViewModel(@NonNull Application application) {
         super(application);
     }
+
     /**
      * This method refresh/Update the data we found from API but currently we use fake data
      */
-    public void refresh(){
-        DogBreed dog1 = new DogBreed("1", "corgi", "15 years",
-                "","","","");
-        DogBreed dog2 = new DogBreed("2", "Rotwallar", "13 years",
-                "","","","");
-        DogBreed dog3 = new DogBreed("3", "Labridor", "10 years",
-                "","","","");
-        DogBreed dog4 = new DogBreed("1", "corgi", "15 years",
-                "","","","");
-        DogBreed dog5 = new DogBreed("2", "Rotwallar", "13 years",
-                "","","","");
-        DogBreed dog6 = new DogBreed("3", "Labridor", "10 years",
-                "","","","");
-        DogBreed dog7 = new DogBreed("1", "corgi", "15 years",
-                "","","","");
-        DogBreed dog8 = new DogBreed("2", "Rotwallar", "13 years",
-                "","","","");
-        DogBreed dog9 = new DogBreed("3", "Labridor", "10 years",
-                "","","","");
+    public void refresh() {
+        fetchFromRemote();
+    }
 
-        // Create a ArrayList to add all data to it.
-        ArrayList<DogBreed> dogsList = new ArrayList<>();
-        dogsList.add(dog1);
-        dogsList.add(dog2);
-        dogsList.add(dog3);
-        dogsList.add(dog4);
-        dogsList.add(dog5);
-        dogsList.add(dog6);
-        dogsList.add(dog7);
-        dogsList.add(dog8);
-        dogsList.add(dog9);
+    private void fetchFromRemote() {
+        loading.setValue(true);
+        disposable.add(
+                dogsService.getDogs()
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableSingleObserver<List<DogBreed>>() {
+                            @Override
+                            public void onSuccess(@io.reactivex.annotations.NonNull List<DogBreed> dogBreeds) {
+                                dogs.setValue(dogBreeds);
+                                dogLoadError.setValue(false);
+                                loading.setValue(false);
+                            }
 
-        // Now set value to all MutableLiveData.
-        dogs.setValue(dogsList);
-        dogLoadError.setValue(false);
-        loading.setValue(false);
+                            @Override
+                            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                                dogLoadError.setValue(true);
+                                loading.setValue(false);
+                                e.printStackTrace();
+                            }
+                        })
+        );
+
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposable.clear();
     }
 }

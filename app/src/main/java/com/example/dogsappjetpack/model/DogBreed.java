@@ -32,7 +32,8 @@ public class DogBreed {
 
     // It is not as per API service, we will use it for database(Room Database
     public int uuid;
-// Constructor for the above mentioned attribute of dog that will come from API
+
+    // Constructor for the above mentioned attribute of dog that will come from API
     public DogBreed(String breedId, String dogBreed, String lifeSpan, String breedGroup,
                     String bredFor, String temperament, String imageurl) {
         this.breedId = breedId;

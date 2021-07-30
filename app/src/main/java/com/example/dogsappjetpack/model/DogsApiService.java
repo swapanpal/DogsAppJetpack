@@ -23,8 +23,9 @@ public class DogsApiService {
                 .build()
                 .create(DogsApi.class);
     }
+
     // method that return a list of dog information
-    public Single<List<DogBreed>> getDogs(){
+    public Single<List<DogBreed>> getDogs() {
         return api.getDogs();
     }
 }
