@@ -93,7 +93,7 @@ public class ListFragment extends Fragment {
                 listError.setVisibility(isError ? View.VISIBLE : View.GONE); // if(isError == true){View.VISIBLE}else{View.GONE}
             }
         });
-        viewModel.dogLoadError.observe(getViewLifecycleOwner(), isLoading -> {
+        viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
             if (isLoading != null && isLoading instanceof Boolean){
                 loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
                 if (isLoading){
