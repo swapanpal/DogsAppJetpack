@@ -1,6 +1,7 @@
 package com.example.dogsappjetpack.model;
 
 import androidx.room.ColumnInfo;
+import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
@@ -8,13 +9,15 @@ import com.google.gson.annotations.SerializedName;
 /**
  * This model class hold all variables of the API that need in app
  */
+
+@Entity
 public class DogBreed {
     // public attribute that will come from API
     // use the same name of the variable that have in API, otherwise use below mention
     // @SerilizedName("") annotation
 
-    @ColumnInfo(name = "breed_id")
-    @SerializedName("id")
+    @ColumnInfo(name = "breed_id")  // for room database column name
+    @SerializedName("id")    // to fetch data from API
     public String breedId;
 
     @ColumnInfo(name = "dog_name")
