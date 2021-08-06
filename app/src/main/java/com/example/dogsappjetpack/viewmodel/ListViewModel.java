@@ -37,8 +37,10 @@ public class ListViewModel extends AndroidViewModel {
     // collect disposable observer
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    // Create a instance of AsyncTask to use in any time
+    // Create a instance of AsyncTask to use inserting data in any time
     private AsyncTask<List<DogBreed>, Void, List<DogBreed>> insertTask;
+    // Create a instance of AsyncTask to use retrieving data in any time
+    private AsyncTask<Void, Void, List<DogBreed>> retrieveTask;
 
     // Default constructor of the AndroidViewModel
     public ListViewModel(@NonNull Application application) {
@@ -47,11 +49,21 @@ public class ListViewModel extends AndroidViewModel {
 
     /**
      * This method refresh/Update the data we found from API but currently we use fake data
+     * Its good practice that at first check data by "fetchFromRemote() method than
+     * check data by fetchFromDatabase() method
      */
     public void refresh() {
-        fetchFromRemote();
+        fetchFromDatabase();
     }
 
+    // Create a method to fetch data from database
+    private void fetchFromDatabase(){
+        loading.setValue(true);
+        retrieveTask = new RetrieveDogsTask();
+        retrieveTask.execute();
+    }
+
+    // create method to fetch data from API
     private void fetchFromRemote() {
         loading.setValue(true);
         disposable.add(
@@ -95,10 +107,15 @@ public class ListViewModel extends AndroidViewModel {
             insertTask.cancel(true);
             insertTask = null;
         }
+        // if any task is running than cancel it and set value to null.
+        if (retrieveTask != null){
+            retrieveTask.cancel(true);
+            retrieveTask = null;
+        }
     }
 
     /**
-     * Create class for AsyncTask (Background thread)
+     * Create class for AsyncTask (Background thread) to insert data into database
      */
     private class insertDogsTask extends AsyncTask<List<DogBreed>, Void, List<DogBreed>>{
 
@@ -122,6 +139,23 @@ public class ListViewModel extends AndroidViewModel {
         @Override
         protected void onPostExecute(List<DogBreed> dogBreeds) {
             dogsRetrived(dogBreeds);
+        }
+    }
+
+    /**
+     * Create a AsyncTask(Background thread) to retrieve data from database
+     */
+    private class RetrieveDogsTask extends AsyncTask<Void, Void, List<DogBreed>>{
+
+        @Override
+        protected List<DogBreed> doInBackground(Void... voids) {
+            return DogDatabase.getInstance(getApplication()).dogDao().getAllDogs();
+        }
+        // Override onPostExecute method to perform main thread
+        @Override
+        protected void onPostExecute(List<DogBreed> dogBreeds) {
+            dogsRetrived(dogBreeds);
+            Toast.makeText(getApplication(), "Dogs retrieved from database", Toast.LENGTH_SHORT).show();
         }
     }
 }
