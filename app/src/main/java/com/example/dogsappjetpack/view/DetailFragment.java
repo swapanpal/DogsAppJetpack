@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.example.dogsappjetpack.R;
 import com.example.dogsappjetpack.model.DogBreed;
+import com.example.dogsappjetpack.util.Util;
 import com.example.dogsappjetpack.viewmodel.DetailViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -68,18 +70,22 @@ public class DetailFragment extends Fragment {
             dogUuid = DetailFragmentArgs.fromBundle(getArguments()).getDogUuid();
         }
         viewModel = ViewModelProviders.of(this).get(DetailViewModel.class);
-        viewModel.fetch();
+        viewModel.fetch(dogUuid);
 
         // call the observeViewModel
         observeViewModel();
     }
     private void observeViewModel(){
         viewModel.dogLiveData.observe(getViewLifecycleOwner(), dogBreed -> {
-        if (dogBreed != null && dogBreed instanceof DogBreed){
+        if (dogBreed != null && dogBreed instanceof DogBreed && getContext() != null){
             dogName.setText(dogBreed.dogBreed);
             dogPurpose.setText(dogBreed.bredFor);
             dogTemperament.setText(dogBreed.temperament);
             dogLifespan.setText(dogBreed.lifeSpan);
+            // For loading actual image
+            if (dogBreed.imageUrl != null){
+                Util.loadImage(dogImage, dogBreed.imageUrl,new CircularProgressDrawable(getContext()));
+            }
         }
         });
     }
