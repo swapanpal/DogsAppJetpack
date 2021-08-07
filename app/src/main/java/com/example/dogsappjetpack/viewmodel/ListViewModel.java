@@ -12,6 +12,7 @@ import com.example.dogsappjetpack.model.DogBreed;
 import com.example.dogsappjetpack.model.DogDao;
 import com.example.dogsappjetpack.model.DogDatabase;
 import com.example.dogsappjetpack.model.DogsApiService;
+import com.example.dogsappjetpack.util.SharedpreferencesHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,18 +43,33 @@ public class ListViewModel extends AndroidViewModel {
     // Create a instance of AsyncTask to use retrieving data in any time
     private AsyncTask<Void, Void, List<DogBreed>> retrieveTask;
 
+    // Create an instance of SharedPreferenceHelper class
+    private SharedpreferencesHelper prefHelper = SharedpreferencesHelper.getInstance(getApplication());
+    // minute * second * milli second * micro second * nano second
+    private long refreshTime = 5 * 60 * 1000 * 1000 * 1000L;  // 5 minutes
+
+
     // Default constructor of the AndroidViewModel
     public ListViewModel(@NonNull Application application) {
         super(application);
     }
 
     /**
-     * This method refresh/Update the data we found from API but currently we use fake data
+     * This method refresh/Update the data we found from API or database but currently we use fake data
      * Its good practice that at first check data by "fetchFromRemote() method than
      * check data by fetchFromDatabase() method
+     * First time fetch data from remote and than fetch from database
      */
     public void refresh() {
-        fetchFromDatabase();
+        long updateTime = prefHelper.getUpdateTime();
+        long currentTime = System.nanoTime();
+
+        if (updateTime != 0 && currentTime - updateTime < refreshTime){
+            fetchFromDatabase();
+        }else {
+            fetchFromRemote();
+        }
+
     }
 
     // Create a method to fetch data from database
@@ -139,6 +155,8 @@ public class ListViewModel extends AndroidViewModel {
         @Override
         protected void onPostExecute(List<DogBreed> dogBreeds) {
             dogsRetrived(dogBreeds);
+            // save insert time in sharedPreferences
+            prefHelper.saveUpdateTime(System.nanoTime());
         }
     }
 
