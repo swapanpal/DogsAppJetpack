@@ -48,7 +48,7 @@ public class DogsListAdapter extends RecyclerView.Adapter<DogsListAdapter.DogVie
     @Override
     public void onBindViewHolder(@NonNull DogViewHolder holder, int position) {
         holder.itemView.setDog(dogsList.get(position));
-        
+
 //        ImageView image = holder.itemView.findViewById(R.id.imageView);
 //        TextView name = holder.itemView.findViewById(R.id.name);
 //        TextView lifespan = holder.itemView.findViewById(R.id.lifespan);
