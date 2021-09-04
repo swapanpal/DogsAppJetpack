@@ -7,13 +7,25 @@
         <variable
             name="dog"
             type="com.example.dogsappjetpack.model.DogBreed" />
+        <variable
+            name="listener"
+            type="com.example.dogsappjetpack.view.DogClickListener" />
     </data>
 
     <LinearLayout
         android:id="@+id/dogLayout"
         android:layout_width="match_parent"
         android:layout_height="125dp"
+        android:onClick="@{listener::onClicked}"
         android:orientation="horizontal">
+
+        <!-- As Details Fragment have a uuid -->
+        <TextView
+            android:id="@+id/dogId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@{String.valueOf( dog.uuid)}"/>
 
         <ImageView
             android:id="@+id/imageView"

@@ -22,7 +22,8 @@ import com.example.dogsappjetpack.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DogsListAdapter extends RecyclerView.Adapter<DogsListAdapter.DogViewHolder> {
+public class DogsListAdapter extends RecyclerView.Adapter<DogsListAdapter.DogViewHolder>
+        implements DogClickListener {
     // create a list of dogs
     private ArrayList<DogBreed> dogsList;
     // public constructor for dogs list
@@ -48,6 +49,7 @@ public class DogsListAdapter extends RecyclerView.Adapter<DogsListAdapter.DogVie
     @Override
     public void onBindViewHolder(@NonNull DogViewHolder holder, int position) {
         holder.itemView.setDog(dogsList.get(position));
+        holder.itemView.setListener(this);
 
 //        ImageView image = holder.itemView.findViewById(R.id.imageView);
 //        TextView name = holder.itemView.findViewById(R.id.name);
@@ -65,6 +67,16 @@ public class DogsListAdapter extends RecyclerView.Adapter<DogsListAdapter.DogVie
 //            action.setDogUuid(dogsList.get(position).uuid);
 //            Navigation.findNavController(layout).navigate(action);
 //        });
+    }
+    @Override
+    public void onClicked(View v) {
+        String uuidString = ((TextView)v.findViewById(R.id.dogId)).getText().toString();
+        int uuid = Integer.valueOf(uuidString);
+
+        ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+          action.setDogUuid(uuid);
+           Navigation.findNavController(v).navigate(action);
+
     }
 
     @Override
