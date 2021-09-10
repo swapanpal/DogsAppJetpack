@@ -1,5 +1,7 @@
 package com.example.dogsappjetpack.view;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
+import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import android.view.LayoutInflater;
@@ -18,9 +21,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.dogsappjetpack.R;
 import com.example.dogsappjetpack.databinding.FragmentDetailBinding;
 import com.example.dogsappjetpack.model.DogBreed;
+import com.example.dogsappjetpack.model.DogPalette;
 import com.example.dogsappjetpack.util.Util;
 import com.example.dogsappjetpack.viewmodel.DetailViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -69,8 +76,43 @@ public class DetailFragment extends Fragment {
         viewModel.dogLiveData.observe(getViewLifecycleOwner(), dogBreed -> {
         if (dogBreed != null && dogBreed instanceof DogBreed && getContext() != null){
             binding.setDog(dogBreed);
+            if (dogBreed.imageUrl != null){
+                setupBackgroundColor(dogBreed.imageUrl);
+            }
         }
         });
+    }
+    // Create a method to setup background images by using palette library/ Glide
+    private void setupBackgroundColor(String url){
+        Glide.with(this)
+                .asBitmap()
+                .load(url)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                       // Generate the color
+                        Palette.from(resource)
+                                .generate(new Palette.PaletteAsyncListener() {
+                                    @Override
+                                    public void onGenerated(@Nullable Palette palette) {
+                                        // Retrive color .we can set any type Light/Dark...
+                                        int intColor = palette.getLightMutedSwatch().getRgb();
+
+                                        // now create a palette element/Object
+                                        DogPalette myPalette = new DogPalette(intColor);
+                                        // Set the value to the element
+                                        binding.setPalette(myPalette);
+
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
+
     }
 
 }
