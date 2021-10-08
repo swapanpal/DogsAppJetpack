@@ -12,6 +12,7 @@ import com.example.dogsappjetpack.model.DogBreed;
 import com.example.dogsappjetpack.model.DogDao;
 import com.example.dogsappjetpack.model.DogDatabase;
 import com.example.dogsappjetpack.model.DogsApiService;
+import com.example.dogsappjetpack.util.NotificationsHelper;
 import com.example.dogsappjetpack.util.SharedpreferencesHelper;
 
 import java.util.ArrayList;
@@ -98,7 +99,8 @@ public class ListViewModel extends AndroidViewModel {
                                 insertTask = new insertDogsTask();
                                 insertTask.execute(dogBreeds);
                                 Toast.makeText(getApplication(), "Dogs retrieved from endpoint (api)", Toast.LENGTH_SHORT).show();
-
+                                // Show the notification
+                                NotificationsHelper.getInstance(getApplication()).createNotification();
                             }
 
                             @Override
