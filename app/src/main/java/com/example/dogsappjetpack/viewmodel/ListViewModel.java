@@ -1,6 +1,7 @@
 package com.example.dogsappjetpack.viewmodel;
 
 import android.app.Application;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -62,6 +63,9 @@ public class ListViewModel extends AndroidViewModel {
      * First time fetch data from remote and than fetch from database
      */
     public void refresh() {
+        // call the checkCacheDuration() method
+        checkCacheDuration();
+
         long updateTime = prefHelper.getUpdateTime();
         long currentTime = System.nanoTime();
 
@@ -79,12 +83,30 @@ public class ListViewModel extends AndroidViewModel {
         fetchFromRemote();
     }
 
+    /**
+     * this method will update the 'refreshTime' variable
+     * retrieve the cache from SharedPreferences
+     */
+    private void checkCacheDuration(){
+        String cachePreference = prefHelper.getCacheDuration();
+        if (!cachePreference.equals("")){
+            try {
+                int cachePreferenceInt = Integer.parseInt(cachePreference);
+                refreshTime = cachePreferenceInt * 1000 * 1000 * 1000L;// milliSecond * microSecond * nanoSecond(for Long type)
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
     // Create a method to fetch data from database
     private void fetchFromDatabase(){
         loading.setValue(true);
         retrieveTask = new RetrieveDogsTask();
         retrieveTask.execute();
     }
+
+
 
     // create method to fetch data from API
     private void fetchFromRemote() {

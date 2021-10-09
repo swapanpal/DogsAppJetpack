@@ -38,4 +38,10 @@ public class SharedpreferencesHelper {
     public long getUpdateTime(){
       return prefs.getLong(PREF_TIME, 0);
     }
+
+    // for setting menu preferences
+    public String getCacheDuration(){
+        return prefs.getString("pref_cash_duration","");  // used same string as setting key
+
+    }
 }

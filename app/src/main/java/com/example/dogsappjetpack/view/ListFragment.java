@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -58,6 +61,7 @@ public class ListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, view);
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -90,27 +94,46 @@ public class ListFragment extends Fragment {
     }
 
     // Create a method to receive dogs information form ListViewModel (LiveData)
-    private void observeViewModel(){
+    private void observeViewModel() {
         viewModel.dogs.observe(getViewLifecycleOwner(), dogs -> {
-            if (dogs != null && dogs instanceof List){
+            if (dogs != null && dogs instanceof List) {
                 dogsList.setVisibility(View.VISIBLE);
                 dogsListAdapter.updateDogsList(dogs);
             }
         });
         viewModel.dogLoadError.observe(getViewLifecycleOwner(), isError -> {
-            if (isError != null && isError instanceof Boolean){
+            if (isError != null && isError instanceof Boolean) {
                 listError.setVisibility(isError ? View.VISIBLE : View.GONE); // if(isError == true){View.VISIBLE}else{View.GONE}
             }
         });
         viewModel.loading.observe(getViewLifecycleOwner(), isLoading -> {
-            if (isLoading != null && isLoading instanceof Boolean){
+            if (isLoading != null && isLoading instanceof Boolean) {
                 loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-                if (isLoading){
+                if (isLoading) {
                     listError.setVisibility(View.GONE);
                     dogsList.setVisibility(View.GONE);
                 }
             }
         });
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.list_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.actionSettings:
+                if (isAdded()) {
+                    Navigation.findNavController(getView()).navigate(ListFragmentDirections.actionSettings());
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
