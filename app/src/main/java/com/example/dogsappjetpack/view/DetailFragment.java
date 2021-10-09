@@ -16,10 +16,14 @@ import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -56,6 +60,7 @@ public class DetailFragment extends Fragment {
         FragmentDetailBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail,
                 container, false);
         this.binding = binding;
+        setHasOptionsMenu(true); // For showing menu in action bar
         return binding.getRoot();
     }
     // override the onViewCreated and add click listener on fab button
@@ -115,4 +120,25 @@ public class DetailFragment extends Fragment {
 
     }
 
+    // For detail menu
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.detail_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_send_sms:{
+                Toast.makeText(getContext(), "Action Send SMS", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.action_share:{
+                Toast.makeText(getContext(), "Action Share", Toast.LENGTH_SHORT).show();
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
