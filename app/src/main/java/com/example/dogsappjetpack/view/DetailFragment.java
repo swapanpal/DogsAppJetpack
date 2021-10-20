@@ -1,6 +1,8 @@
 package com.example.dogsappjetpack.view;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import androidx.navigation.Navigation;
 import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -178,7 +181,16 @@ public class DetailFragment extends Fragment {
           dialogBinding.setSmsInfo(smsInfo);
       }
     }
-    private void sendSms(SmsInfo smsInfo){
 
+    /**
+     * This method will send sms to destination
+     * @param smsInfo
+     * Need real device with SIM card to send sms
+     */
+    private void sendSms(SmsInfo smsInfo){
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(getContext(), 0, intent, 0);
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(smsInfo.to,null,smsInfo.text,pi, null);
     }
 }
