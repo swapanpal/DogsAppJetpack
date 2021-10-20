@@ -1,5 +1,6 @@
 package com.example.dogsappjetpack.view;
 
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -30,8 +31,10 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.dogsappjetpack.R;
 import com.example.dogsappjetpack.databinding.FragmentDetailBinding;
+import com.example.dogsappjetpack.databinding.SendSmsDialogBinding;
 import com.example.dogsappjetpack.model.DogBreed;
 import com.example.dogsappjetpack.model.DogPalette;
+import com.example.dogsappjetpack.model.SmsInfo;
 import com.example.dogsappjetpack.util.Util;
 import com.example.dogsappjetpack.viewmodel.DetailViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,6 +51,8 @@ public class DetailFragment extends Fragment {
     private FragmentDetailBinding binding;
 
     private boolean sendSmsStarted = false;
+
+    private DogBreed currentDog;
 
 
     public DetailFragment() {
@@ -82,6 +87,7 @@ public class DetailFragment extends Fragment {
     private void observeViewModel(){
         viewModel.dogLiveData.observe(getViewLifecycleOwner(), dogBreed -> {
         if (dogBreed != null && dogBreed instanceof DogBreed && getContext() != null){
+            currentDog = dogBreed;
             binding.setDog(dogBreed);
             if (dogBreed.imageUrl != null){
                 setupBackgroundColor(dogBreed.imageUrl);
@@ -148,6 +154,31 @@ public class DetailFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
     public void onPermissionResult(boolean permissionGranted){
-        sendSmsStarted = false;
+      if (isAdded() && sendSmsStarted && permissionGranted){
+          SmsInfo smsInfo = new SmsInfo("", currentDog.dogBreed +"bred for" + currentDog.bredFor,
+                  currentDog.imageUrl);
+          SendSmsDialogBinding dialogBinding = DataBindingUtil.inflate(
+                  LayoutInflater.from(getContext()),
+                  R.layout.send_sms_dialog,
+                  null,
+                  false
+          );
+          new AlertDialog.Builder(getContext())
+                  .setView(dialogBinding.getRoot())
+                  .setPositiveButton("Send SMS",((dialog, which) -> {
+                      if (!dialogBinding.smsDestination.getText().toString().isEmpty()){
+                          smsInfo.to = dialogBinding.smsDestination.getText().toString();
+                          sendSms(smsInfo);
+                      }
+                  }))
+                  .setNegativeButton("Cancel", ((dialog, which) -> {}))
+                  .show();
+          sendSmsStarted = false;
+          // Binding the data for sms
+          dialogBinding.setSmsInfo(smsInfo);
+      }
+    }
+    private void sendSms(SmsInfo smsInfo){
+
     }
 }
